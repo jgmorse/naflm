@@ -5,32 +5,32 @@
  *************************/
 preg_match('/settings_(.*?)\.php/', __FILE__, $match);
 $get_lid = $match[1];
-$settings['stylesheet'] = 1; 
+$settings['stylesheet'] = 1;
 $settings['lang']            = 'en-GB';
 
 /*********************
  *   General
  *********************/
 // Change the Title after the = sign.  Do not change things before the = sign.
-$settings['banner_subtitle'] = 'New here?  Visit theNAF.net/Leagues for more information';
+$settings['banner_subtitle'] = 'A private league in Ann Arbor, MI, USA';
 // Button text for league URL.
-$settings['league_url_name'] = 'League Forum'; 
-// Stylesheet for text etc. Currently stylesheet 1 is the only existing stylesheet, so don't change it!  
-// Default language. Existing: en-GB, es-ES, de-DE, fr-FR, it-IT. 
-// Default is true. Generate coach, team and player links on the front page?       
+$settings['league_url_name'] = 'Dead Link!';
+// Stylesheet for text etc. Currently stylesheet 1 is the only existing stylesheet, so don't change it!
+// Default language. Existing: en-GB, es-ES, de-DE, fr-FR, it-IT.
+// Default is true. Generate coach, team and player links on the front page?
 $settings['fp_links']        = true;
-$settings['league_name']     = get_alt_col('league_prefs','f_lid',$get_lid,'league_name'); 
+$settings['league_name']     = get_alt_col('league_prefs','f_lid',$get_lid,'league_name');
 $settings['banner_title']    = get_alt_col('league_prefs','f_lid',$get_lid,'league_name');
 // URL of league home page, if you have one. If not then leave this empty, that is = '' (two quotes only), which will disable the button.
-$settings['league_url']      = get_alt_col('league_prefs','f_lid',$get_lid,'forum_url');    
-// The welcome text appears below the title.           
-$settings['welcome']         = get_alt_col('league_prefs','f_lid',$get_lid,'welcome'); 
+$settings['league_url']      = get_alt_col('league_prefs','f_lid',$get_lid,'forum_url');
+// The welcome text appears below the title.
+$settings['welcome']         = get_alt_col('league_prefs','f_lid',$get_lid,'welcome');
 // The next text appears when you click the rules button.
-$settings['rules']           = get_alt_col('league_prefs','f_lid',$get_lid,'rules'); 
+$settings['rules']           = get_alt_col('league_prefs','f_lid',$get_lid,'rules');
 $get_prime = get_alt_col('league_prefs','f_lid',$get_lid,'prime_tid');
 $get_second = get_alt_col('league_prefs','f_lid',$get_lid,'second_tid');
 // Keep the following the same.
-$settings['tourlist_foldup_fin_divs'] = false; // Default is false. If true the division nodes in the tournament lists section will automatically be folded up if all child tournaments in that division are marked as finished.
+$settings['tourlist_foldup_fin_divs'] = true; // Default is false. If true the division nodes in the tournament lists section will automatically be folded up if all child tournaments in that division are marked as finished.
 $settings['tourlist_hide_nodes'] = array('league', 'division', 'tournament'); // Default is array('league', 'division', 'tournament'). In the section tournament lists these nodes will be hidden if their contents (children) are finished. Example: If 'division' is chosen here, and all tours in a given division are finished, then the division entry will be hidden.
 
 /*********************
@@ -49,7 +49,7 @@ $rules['initial_ass_coaches']   = 0;        // Default is 0.
 $rules['initial_cheerleaders']  = 0;        // Default is 0.
 // For the below limits, the following applies: -1 = unlimited. 0 = disabled.
 $rules['max_rerolls']           = -1;       // Default is -1.
-$rules['max_fan_factor']        = 9;        // Default is 9.
+$rules['max_fan_factor']        = -1;        // Default is 9.
 $rules['max_ass_coaches']       = -1;       // Default is -1.
 $rules['max_cheerleaders']      = -1;       // Default is -1.
 // Remove double backslashes in front of team number to enable team specific starting treasuries.
@@ -80,7 +80,7 @@ $rules['initial_team_treasury'] = array(	//	0			=>	1000000,	// Amazon
 											//	24			=>	1000000,	// Bretonnia
 											//	25			=>	1000000,	// Daemons of Khorne
 											//	26			=>	1000000,	// Apes of Wrath
-										);	
+										);
 
 /*********************
  *   Standings pages
@@ -131,54 +131,109 @@ $settings['fp_standings'] = array(
 		'box_ID' 	=> 	1,
 		'type' 		=> 	'tournament',
 		'infocus' 	=> 	true,
-		'HRS' 		=> 	get_alt_col('tours','tour_id',$get_prime,'rs'), 
+		'HRS' 		=> 	get_alt_col('tours','tour_id',$get_prime,'rs'),
 		'title' 	=> 	get_alt_col('tours','tour_id',$get_prime,'name'),
-		'length' 	=> 	40, 
-		'fields' 	=> 	array(	'Name'	=> 'name',
-								'PTS'  	=> 'pts',
-								'TV'	=> 'tv',
-								'CAS'	=> 'cas',
-								'W'		=> 'won',
-								'L'		=> 'lost',
-								'D'		=> 'draw',
-								'GF'	=> 'gf',
-								'GA'	=> 'ga',
+		'length' 	=> 	40,
+		'fields' => array('Name' => 'name', 'PTS' => 'pts', 'TV' => 'tv', 'W' => 'won', 'D' => 'draw', 'L' => 'lost', 'TDf' => 'gf', 'TDa' => 'ga', 'CASf' => 'tcasf', 'CASa' => 'tcasa'),
 						),
 	),
 );
 
-/*********************
- *   Front page: leaders boxes
- *********************/
-$settings['fp_leaders'] = array(
-    /* ID is the unique ID of the node (league, division or tournament) to be displayed
-	 * BOX_ID must be unique and will be displayed in numerical order
-	 * TYPE may be one of: 'league', 'division' or 'tournament'
-	 * TITLE is the Table title
-	 * FIELD is the field to be ranked.
-	   Please note: You can NOT make expressions out of leader fields e.g.: 'field' => 'cas+td'
-	   For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
-	 * LENGTH is the number of entries in table
-	 * SHOW_TEAM if set to true, will include the Team name in the table
-	 */
-    # This will display a 'Most CAS' player leaders box for the Divison of the Prime Tournament
-    array(	'id'        => get_alt_col('tours','tour_id',$get_prime,'f_did'), # Node ID
-			'box_ID'    => 3,
-			'type'      => 'division',
-			'title'     => 'Most Individual Casualties (Division)',
-			'field'     => 'cas',
-			'length'    => 5,
-			'show_team' => true,
-    ),
-    # This will display a 'Most TD' player leaders box for the Division of the Prime Tournament
-    array(	'id'        => get_alt_col('tours','tour_id',$get_prime,'f_did'),
-			'box_ID'    => 4,
-			'type'      => 'division',
-			'title'     => 'Most Individual Touchdowns (Division)',
-			'field'     => 'td',
-			'length'    => 5,
-			'show_team' => true,
-    ),
+##################
+# Season leaders
+##################
+# This will display a 'most CAS' player leaders box for the node (league, division or tournament) with ID = 1
+array(
+		'id'        => $get_prime, # Node ID
+		'box_ID'    => 11,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'tournament', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Season CAS Leaders', # Table title
+		'field'     => 'cas', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most TD' player leaders box for the node (league, division or tournament) with ID = 2
+array(
+		'id'        => $get_prime, # Node ID
+		'box_ID'    => 10,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'tournament', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Season TD Leaders', # Table title
+		'field'     => 'td', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most CP' player leaders box for the node (league, division or tournament)
+array(
+		'id'        => $get_prime, # Node ID
+		'box_ID'    => 12,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'tournament', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Season Passing Leaders', # Table title
+		'field'     => 'cp', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most MVP' player leaders box for the node (league, division or tournament)
+array(
+		'id'        => $get_prime, # Node ID
+		'box_ID'    => 13,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'tournament', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => "Season SPP Leaders", # Table title
+		'field'     => 'spp', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+
+##################
+# All-time leaders
+##################
+# This will display a 'most CAS' player leaders box for the node (league, division or tournament) with ID = 1
+array(
+		'id'        => $get_lid, # Node ID
+		'box_ID'    => 21,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'league', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Most Individual Casualties (League)', # Table title
+		'field'     => 'cas', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most TD' player leaders box for the node (league, division or tournament) with ID = 2
+array(
+		'id'        => $get_lid, # Node ID
+		'box_ID'    => 20,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'league', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Most Individual Touchdowns (League)', # Table title
+		'field'     => 'td', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most CP' player leaders box for the node (league, division or tournament)
+array(
+		'id'        => $get_lid, # Node ID
+		'box_ID'    => 22,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'league', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => 'Most Individual Completions (League)', # Table title
+		'field'     => 'cp', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
+# This will display a 'most MVP' player leaders box for the node (league, division or tournament)
+array(
+		'id'        => $get_lid, # Node ID
+		'box_ID'    => 23,
+		// Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+		'type'      => 'league', # This sets the node to be a tournament. I.e. this will make a leaders box for the tournament with ID = 1
+		'title'     => "Block'Em League's Greatest Stars", # Table title
+		'field'     => 'spp', # For the OBBLM fields available see http://nicholasmr.dk/obblmwiki/index.php?title=Customization
+		'length'    => 5, # Number of entries in table
+		'show_team' => true, # Show player's team name?
+),
 );
 
 /*********************
@@ -197,39 +252,39 @@ $settings['fp_events'] = array(
 	 * LENGTH is the number of entries in table
 	 */
     # This will display a list of the most recent killed players for the Prime Tournament
-    array(	'id'        => $get_lid,
-			'box_ID'    => 5,
-			'type'      => 'league',
-			'title'     => 'Latest Dead Players (League)',
-			'content'   => 'dead',
-			'length'    => 5,
+		array(
+        'id'        => $get_lid, # Node ID
+        'box_ID'    => 5,
+        // Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+        'type'      => 'league', # This sets the node to be a tournament. I.e. this will make an event box for the tournament with ID = 1
+        'title'     => 'Latest Dead Players (League)', # Table title
+        'content'   => 'dead', # Event type
+        'length'    => 5, # Number of entries in table
     ),
-	# This will display a list of the most recent skills gained for the Prime Tournament
-	array(	'id'        => $get_lid,
-			'box_ID'    => 6,
-			'type'      => 'league',
-			'title'     => 'Latest Skills (League)',
-			'content'   => 'skills',
-			'length'    => 5,
+
+array(
+        'id'        => $get_lid, # Node ID
+        'box_ID'    => 4,
+        // Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+        'type'      => 'league', # This sets the node to be a tournament. I.e. this will make an event box for the tournament with ID = 1
+        'title'     => 'Latest Skills (League)', # Table title
+        'content'   => 'skills', # Event type
+        'length'    => 5, # Number of entries in table
     ),
 );
+
 
 /*********************
  *   Front page: latest games boxes
  *********************/
-$settings['fp_latestgames'] = array(
-	/* ID is the unique ID of the node (league, division or tournament) to be displayed
-	 * BOX_ID must be unique and will be displayed in numerical order
-	 * TYPE may be one of: 'league', 'division' or 'tournament'
-	 * TITLE is the Table title
-	 * LENGTH is the number of entries in table
-	 */
-    # This will display a latest games box for the Prime Tournament
-    array(
-        'id'     => $get_lid,
-        'box_ID' => 7,
-        'type'   => 'league',
-        'title'  => 'Recent Games (League)',
-        'length' => 5,
-    ),
-);
+ $settings['fp_latestgames'] = array(
+     # This will display a latest games box for the node (league, division or tournament) with ID = 1
+     array(
+         'id'     => $get_lid, # Node ID
+         'box_ID' => 2,
+         // Please note: 'type' may be either one of: 'league', 'division' or 'tournament'
+         'type'   => 'league', # This sets the node to be a league. I.e. this will make a latest games box for the league with ID = 1
+         'title'  => 'Recent Games', # Table title
+         'length' => 8, # Number of entries in table
+     ),
+ );
